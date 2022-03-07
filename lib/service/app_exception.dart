@@ -23,6 +23,8 @@ class ExceptionHandler implements Exception {
 
     _exception = error;
   }
+ // 1. base view // provide data
+ // 2. how error and loading
 
   ErrorModel? getErrorModel() => _errorModel;
 

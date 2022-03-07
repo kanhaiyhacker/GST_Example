@@ -1,48 +1,65 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gst_app/domain/model/gst/gst_detail.dart';
-import 'package:gst_app/service/route_service/locator.dart';
-import 'package:gst_app/service/route_service/navigation_service.dart';
+import 'package:gst_app/ui/base_ui/base_ui.dart';
+import 'package:gst_app/ui/gst_detail/bloc/gst_search_bloc.dart';
+import 'package:gst_app/ui/gst_detail/bloc/gst_search_bloc_state.dart';
 import 'package:gst_app/ui/gst_detail/ui/sub_widget/address_widget.dart';
 import 'package:gst_app/ui/gst_detail/ui/sub_widget/card_item.dart';
 import 'package:gst_app/ui/gst_detail/ui/sub_widget/header.dart';
-import 'package:gst_app/ui/widgets/primary_button.dart';
+import 'package:gst_app/ui/gst_search/bloc/gst_search_bloc.dart';
 import 'package:gst_app/utility/color_util.dart';
 import 'package:gst_app/utility/date_util.dart';
 import 'package:gst_app/utility/resources/size_constant.dart';
 import 'package:gst_app/utility/resources/strings.dart';
 
-class GSTDetailScreen extends StatelessWidget {
+class GSTDetailScreen extends StatefulWidget {
   final GSTDetail detail;
 
   const GSTDetailScreen(this.detail, {Key? key}) : super(key: key);
 
   @override
+  State<GSTDetailScreen> createState() => _GSTDetailScreenState();
+}
+
+class _GSTDetailScreenState extends State<GSTDetailScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Container(
-        margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        padding: AppSizeUtil.paddingAll4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Header(detail),
-                    AddressWidget(detail),
-                    _taxPayerDetails(),
-                    _businessType(),
-                    _registrationTime(),
-                  ],
+      body: BaseUI<GSTSearchDetailCubit, GSTDetailCubitState>(
+        onDataLoaded: (data) {
+          showDialog(
+            builder: (context) => const AlertDialog(
+              content: Text("Data loaded"),
+            ),
+            context: context,
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          padding: AppSizeUtil.paddingAll4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Header(widget.detail),
+                      AddressWidget(widget.detail),
+                      _taxPayerDetails(),
+                      _businessType(),
+                      _registrationTime(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            _bottomButton(context)
-          ],
+              _bottomButton(context)
+            ],
+          ),
         ),
       ),
     );
@@ -59,7 +76,7 @@ class GSTDetailScreen extends StatelessWidget {
               color: AppColors.white,
               child: CardItem(
                 label: kStateJurisdiction,
-                value: detail.stateJurisdiction,
+                value: widget.detail.stateJurisdiction,
               ),
             ),
           ),
@@ -69,7 +86,7 @@ class GSTDetailScreen extends StatelessWidget {
               color: AppColors.white,
               child: CardItem(
                 label: kCentralJurisdiction,
-                value: detail.centralJurisdiction,
+                value: widget.detail.centralJurisdiction,
               ),
             ),
           ),
@@ -79,7 +96,7 @@ class GSTDetailScreen extends StatelessWidget {
               color: AppColors.white,
               child: CardItem(
                 label: kTaxpayerType,
-                value: detail.taxPayerType,
+                value: widget.detail.taxPayerType,
               ),
             ),
           )
@@ -96,7 +113,7 @@ class GSTDetailScreen extends StatelessWidget {
         color: AppColors.white,
         child: CardItem(
           label: kConstitutionOfBusiness,
-          value: detail.businessType,
+          value: widget.detail.businessType,
         ),
       ),
     );
@@ -113,7 +130,8 @@ class GSTDetailScreen extends StatelessWidget {
           children: [
             CardItem(
               label: kDateOfRegistration,
-              value: DateTimeUtils.getDate(detail.registrationDate ?? ''),
+              value:
+                  DateTimeUtils.getDate(widget.detail.registrationDate ?? ''),
             ),
             const CardItem(
               label: kDateOfCancellation,
@@ -128,7 +146,8 @@ class GSTDetailScreen extends StatelessWidget {
   Widget _bottomButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        locator<NavigationService>().pop();
+        getGSTData();
+        // locator<NavigationService>().pop();
       },
       child: Container(
         color: AppColors.appGreenDark,
@@ -141,5 +160,11 @@ class GSTDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void getGSTData() {
+    print("get gst data is called");
+    FocusScope.of(context).unfocus();
+    context.read<GSTSearchDetailCubit>().searchGSTRepository("dfasdf");
   }
 }

@@ -4,30 +4,31 @@ import 'package:gst_app/domain/respository/gst_repository/gst_repository.dart';
 
 import 'gst_search_bloc_state.dart';
 
-class GSTSearchCubit extends Cubit<GSTSearchCubitState> {
+class GSTSearchDetailCubit extends Cubit<GSTDetailCubitState> {
   String searchType = "";
 
-  GSTSearchCubit(GSTSearchCubitState initialState) : super(initialState);
+  GSTSearchDetailCubit(GSTDetailCubitState initialState) : super(initialState);
 
   GSTRepository repository = GSTRepository();
 
   void searchGSTRepository(String gst) async {
-    emit(LoadGSTSearchState.loading(''));
+    emit(LoadGSTDetailState.loading(''));
     print("gst is empty ${gst.isNotEmpty} $gst");
     if (gst.isEmpty) {
-      emit(LoadGSTSearchState.error(
+      emit(LoadGSTDetailState.error(
           AppError.defaultError(displayMessage: "Please enter GST Number")));
       return;
     }
     try {
       final response = await repository.getMockGSTDetail(gst);
       if (response.getData != null) {
-        emit(LoadGSTSearchState.completed(response.getData));
+        emit(LoadGSTDetailState.completed(response.getData));
       } else {
-        emit(LoadGSTSearchState.error(AppError.defaultError()));
+        emit(LoadGSTDetailState.error(AppError.defaultError()));
       }
     } catch (e) {
-      emit(LoadGSTSearchState.error(AppError.defaultError()));
+      print(e);
+      emit(LoadGSTDetailState.error(AppError.defaultError()));
     }
   }
 

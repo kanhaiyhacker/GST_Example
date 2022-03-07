@@ -6,6 +6,8 @@ import 'package:gst_app/service/route_service/locator.dart';
 import 'package:gst_app/service/route_service/navigation_service.dart';
 import 'package:gst_app/service/route_service/router_generator.dart';
 import 'package:gst_app/service/service_manager.dart';
+import 'package:gst_app/ui/gst_detail/bloc/gst_search_bloc.dart';
+import 'package:gst_app/ui/gst_detail/bloc/gst_search_bloc_state.dart';
 import 'package:gst_app/ui/gst_search/bloc/gst_search_bloc.dart';
 import 'package:gst_app/ui/gst_search/bloc/gst_search_bloc_state.dart';
 import 'package:gst_app/ui/gst_search/ui/gst_search_home.dart';
@@ -29,6 +31,10 @@ class BaseApp extends StatelessWidget {
       providers: [
         BlocProvider<GSTSearchCubit>(
           create: (context) => GSTSearchCubit(LoadGSTSearchState.initial()),
+        ),
+        BlocProvider<GSTSearchDetailCubit>(
+          create: (context) =>
+              GSTSearchDetailCubit(LoadGSTDetailState.initial()),
         )
       ],
       child: MaterialApp(
